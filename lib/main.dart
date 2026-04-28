@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/auth/login_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'presentation/screens/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
       title: 'صحتك',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        fontFamily: GoogleFonts.cairo().fontFamily,
         useMaterial3: true,
+        primarySwatch: Colors.teal,
       ),
-      home: const LoginScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
