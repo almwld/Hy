@@ -26,10 +26,8 @@ jobs:
       
       - name: Create Flutter app
         run: |
-          # إنشاء تطبيق جديد
           flutter create --project-name sehatak --org com.sehatak .
           
-          # إنشاء main.dart
           cat > lib/main.dart << 'END'
           import 'package:flutter/material.dart';
           void main() => runApp(const MyApp());
@@ -46,6 +44,13 @@ jobs:
                 ),
               );
             }
+          }
+          END
+          
+          # إصلاح build.gradle - إضافة namespace
+          cat >> android/app/build.gradle << 'END'
+          android {
+              namespace 'com.sehatak.medical'
           }
           END
       
