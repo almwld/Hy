@@ -1,258 +1,36 @@
 name: Build Sehatak Medical APK
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.0'
-          channel: 'stable'
-
+      - uses: actions/checkout@v4
+      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Create Android project structure
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+      
+      - name: Create Flutter app
         run: |
-          mkdir -p android/app/src/main/kotlin/com/sehatak/medical
-          mkdir -p android/gradle/wrapper
-          mkdir -p android/app/src/main/res/values
-          mkdir -p android/app/src/main/res/drawable
-
-      - name: Create gradle.properties
-        run: |
-          cat > android/gradle.properties << 'EOF'
-          org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=2g
-          android.useAndroidX=true
-          android.enableJetifier=true
-          EOF
-
-      - name: Create settings.gradle
-        run: |
-          cat > android/settings.gradle << 'EOF'
-          pluginManagement {
-              def flutterSdkPath = {
-                  def properties = new Properties()
-                  file("local.properties").withInputStream { properties.load(it) }
-                  def flutterSdkPath = properties.getProperty("flutter.sdk")
-                  assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-                  return flutterSdkPath
-              }()
-              includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          plugins {
-              id "dev.flutter.flutter-plugin-loader" version "1.0.0"
-              id "com.android.application" version "7.4.2" apply false
-              id "org.jetbrains.kotlin.android" version "1.9.0" apply false
-          }
-          include ":app"
-          EOF
-
-      - name: Create build.gradle (project level)
-        run: |
-          cat > android/build.gradle << 'EOF'
-          buildscript {
-              ext.kotlin_version = '1.9.0'
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-              dependencies {
-                  classpath 'com.android.tools.build:gradle:7.4.2'
-                  classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-              }
-          }
-          allprojects {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.buildDir = '../build'
-          subprojects {
-              project.buildDir = "${rootProject.buildDir}/${project.name}"
-          }
-          subprojects {
-              project.evaluationDependsOn(':app')
-          }
-          tasks.register("clean", Delete) {
-              delete rootProject.buildDir
-          }
-          EOF
-
-      - name: Create app build.gradle
-        run: |
-          cat > android/app/build.gradle << 'EOF'
-          plugins {
-              id "com.android.application"
-              id "kotlin-android"
-              id "dev.flutter.flutter-gradle-plugin"
-          }
+          flutter create --project-name sehatak --org com.sehatak .
           
-          def localProperties = new Properties()
-          def localPropertiesFile = rootProject.file('local.properties')
-          if (localPropertiesFile.exists()) {
-              localPropertiesFile.withReader('UTF-8') { reader ->
-                  localProperties.load(reader)
-              }
-          }
-          
-          def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-          if (flutterVersionCode == null) {
-              flutterVersionCode = '1'
-          }
-          
-          def flutterVersionName = localProperties.getProperty('flutter.versionName')
-          if (flutterVersionName == null) {
-              flutterVersionName = '1.0'
-          }
-          
-          android {
-              namespace "com.sehatak.medical"
-              compileSdk 34
-              ndkVersion flutter.ndkVersion
-              
-              compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_1_8
-                  targetCompatibility JavaVersion.VERSION_1_8
-              }
-              
-              kotlinOptions {
-                  jvmTarget = '1.8'
-              }
-              
-              sourceSets {
-                  main.java.srcDirs += 'src/main/kotlin'
-              }
-              
-              defaultConfig {
-                  applicationId "com.sehatak.medical"
-                  minSdk 21
-                  targetSdk 34
-                  versionCode flutterVersionCode.toInteger()
-                  versionName flutterVersionName
-                  multiDexEnabled true
-              }
-              
-              buildTypes {
-                  release {
-                      signingConfig signingConfigs.debug
-                      minifyEnabled false
-                  }
-              }
-          }
-          
-          flutter {
-              source '../..'
-          }
-          
-          dependencies {
-              implementation 'androidx.multidex:multidex:2.0.1'
-          }
-          EOF
-
-      - name: Create gradle-wrapper.properties
-        run: |
-          cat > android/gradle/wrapper/gradle-wrapper.properties << 'EOF'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.0-all.zip
-          EOF
-
-      - name: Create AndroidManifest.xml
-        run: |
-          cat > android/app/src/main/AndroidManifest.xml << 'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.INTERNET"/>
-              <application
-                  android:label="Sehatak"
-                  android:name="${applicationName}"
-                  android:icon="@mipmap/ic_launcher">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:launchMode="singleTop"
-                      android:theme="@style/LaunchTheme">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN"/>
-                          <category android:name="android.intent.category.LAUNCHER"/>
-                      </intent-filter>
-                  </activity>
-                  <meta-data android:name="flutterEmbedding" android:value="2"/>
-              </application>
-          </manifest>
-          EOF
-
-      - name: Create MainActivity.kt
-        run: |
-          cat > android/app/src/main/kotlin/com/sehatak/medical/MainActivity.kt << 'EOF'
-          package com.sehatak.medical
-          import io.flutter.embedding.android.FlutterActivity
-          class MainActivity: FlutterActivity()
-          EOF
-
-      - name: Create styles.xml
-        run: |
-          cat > android/app/src/main/res/values/styles.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
-                  <item name="android:windowBackground">@drawable/launch_background</item>
-              </style>
-          </resources>
-          EOF
-
-      - name: Create launch_background.xml
-        run: |
-          cat > android/app/src/main/res/drawable/launch_background.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-              <item android:drawable="@android:color/black" />
-          </layer-list>
-          EOF
-
-      - name: Create placeholder icons
-        run: |
-          for dir in mipmap-hdpi mipmap-mdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
-            mkdir -p android/app/src/main/res/$dir
-            echo "ic_launcher" > android/app/src/main/res/$dir/ic_launcher.png
-          done
-
-      - name: Create local.properties
-        run: |
-          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
-          echo "flutter.versionName=1.0.0" >> android/local.properties
-          echo "flutter.versionCode=1" >> android/local.properties
-
-      - name: Create main.dart
-        run: |
-          cat > lib/main.dart << 'EOF'
+          cat > lib/main.dart << 'END'
           import 'package:flutter/material.dart';
-          
           void main() => runApp(const MyApp());
-          
           class MyApp extends StatelessWidget {
             const MyApp({super.key});
             @override
@@ -260,55 +38,32 @@ jobs:
               return MaterialApp(
                 title: 'Sehatak',
                 theme: ThemeData(primarySwatch: Colors.teal),
-                home: const HomePage(),
+                home: const Scaffold(
+                  appBar: AppBar(title: Text('Sehatak')),
+                  body: Center(child: Text('Welcome to Sehatak Medical')),
+                ),
               );
             }
           }
-          
-          class HomePage extends StatelessWidget {
-            const HomePage({super.key});
-            @override
-            Widget build(BuildContext context) {
-              return Scaffold(
-                appBar: AppBar(title: const Text('Sehatak Medical')),
-                body: const Center(child: Text('Welcome to Sehatak Medical Platform')),
-              );
-            }
-          }
-          EOF
-
-      - name: Create pubspec.yaml
+          END
+      
+      - name: Fix namespace and package
         run: |
-          cat > pubspec.yaml << 'EOF'
-          name: sehatak
-          description: Medical Platform App
-          version: 1.0.0+1
+          # إضافة namespace إلى build.gradle
+          sed -i '/android {/a\    namespace "com.sehatak.sehatak"' android/app/build.gradle
           
-          environment:
-            sdk: '>=3.0.0 <4.0.0'
+          # إضافة package إلى AndroidManifest.xml
+          sed -i 's/<manifest /<manifest package="com.sehatak.sehatak" /' android/app/src/main/AndroidManifest.xml
           
-          dependencies:
-            flutter:
-              sdk: flutter
-          
-          dev_dependencies:
-            flutter_test:
-              sdk: flutter
-            flutter_lints: ^3.0.0
-          
-          flutter:
-            uses-material-design: true
-          EOF
-
-      - name: Get dependencies
-        run: flutter pub get
-
+          # تمكين AndroidX
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+      
       - name: Build APK
         run: flutter build apk --release
-
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: sehatak-medical-apk
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 7
+          name: sehatak-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
