@@ -1,4 +1,4 @@
-name: Build Sehatak Medical APK
+name: Build Sehatak APK
 
 on:
   workflow_dispatch:
@@ -24,10 +24,15 @@ jobs:
           flutter-version: '3.16.0'
           channel: 'stable'
       
-      - name: Create Flutter app
+      - name: Create Flutter app and fix configs
         run: |
+          # حذف أي مجلدات قديمة
+          rm -rf android ios .dart_tool build
+          
+          # إنشاء مشروع جديد
           flutter create --project-name sehatak --org com.sehatak .
           
+          # إنشاء main.dart
           cat > lib/main.dart << 'END'
           import 'package:flutter/material.dart';
           void main() => runApp(const MyApp());
@@ -46,16 +51,17 @@ jobs:
             }
           }
           END
-      
-      - name: Fix namespace and package
-        run: |
-          # إضافة namespace إلى build.gradle
-          sed -i '/android {/a\    namespace "com.sehatak.sehatak"' android/app/build.gradle
+          
+          # إضافة namespace إلى android/app/build.gradle
+          echo "" >> android/app/build.gradle
+          echo "android {" >> android/app/build.gradle
+          echo "    namespace 'com.sehatak.sehatak'" >> android/app/build.gradle
+          echo "}" >> android/app/build.gradle
           
           # إضافة package إلى AndroidManifest.xml
           sed -i 's/<manifest /<manifest package="com.sehatak.sehatak" /' android/app/src/main/AndroidManifest.xml
           
-          # تمكين AndroidX
+          # إضافة AndroidX properties
           echo "android.useAndroidX=true" >> android/gradle.properties
           echo "android.enableJetifier=true" >> android/gradle.properties
       
