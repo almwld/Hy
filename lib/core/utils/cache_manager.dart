@@ -8,8 +8,10 @@ class CacheManager<K, V> {
   
   V? get(K key) {
     if (!_cache.containsKey(key)) return null;
-    final value = _cache.remove(key)!;
-    _cache[key] = value;
+    final value = _cache.remove(key);
+    if (value != null) {
+      _cache[key] = value;
+    }
     return value;
   }
   
