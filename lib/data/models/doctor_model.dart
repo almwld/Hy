@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'doctor_model.g.dart';
-
-@JsonSerializable()
 class DoctorModel {
   final String id;
   final String name;
@@ -11,12 +6,8 @@ class DoctorModel {
   final double rating;
   final int reviewsCount;
   final String experience;
-  final String clinicAddress;
   final double consultationPrice;
-  final List<String> availableDays;
-  final List<String> workingHours;
-  final bool isAvailableToday;
-
+  
   DoctorModel({
     required this.id,
     required this.name,
@@ -25,13 +16,32 @@ class DoctorModel {
     required this.rating,
     required this.reviewsCount,
     required this.experience,
-    required this.clinicAddress,
     required this.consultationPrice,
-    required this.availableDays,
-    required this.workingHours,
-    required this.isAvailableToday,
   });
-
-  factory DoctorModel.fromJson(Map<String, dynamic> json) => _$DoctorModelFromJson(json);
-  Map<String, dynamic> toJson() => _$DoctorModelToJson(this);
+  
+  factory DoctorModel.fromJson(Map<String, dynamic> json) {
+    return DoctorModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      specialty: json['specialty'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      rating: (json['rating'] as num).toDouble(),
+      reviewsCount: json['reviewsCount'] as int,
+      experience: json['experience'] as String,
+      consultationPrice: (json['consultationPrice'] as num).toDouble(),
+    );
+  }
+  
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'specialty': specialty,
+      'imageUrl': imageUrl,
+      'rating': rating,
+      'reviewsCount': reviewsCount,
+      'experience': experience,
+      'consultationPrice': consultationPrice,
+    };
+  }
 }
