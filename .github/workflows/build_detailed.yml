@@ -1,0 +1,72 @@
+name: Detailed Build Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * *'  # كل يوم عند منتصف الليل
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+    - run: flutter pub get
+    - run: flutter analyze
+    - run: flutter format --set-exit-if-changed lib
+  
+  test:
+    runs-on: ubuntu-latest
+    needs: analyze
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+    - run: flutter pub get
+    - run: flutter test
+  
+  build_android:
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      matrix:
+        include:
+          - abi: "armeabi-v7a"
+            output: "app-armeabi-v7a-release.apk"
+          - abi: "arm64-v8a"
+            output: "app-arm64-v8a-release.apk"
+          - abi: "x86_64"
+            output: "app-x86_64-release.apk"
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+    - run: flutter pub get
+    - run: flutter build apk --release --target-platform android-${{ matrix.abi }}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: sehatak-${{ matrix.abi }}
+        path: build/app/outputs/flutter-apk/${{ matrix.output }}
+  
+  format_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+    - run: flutter format --set-exit-if-changed lib
+  
+  dependency_check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: |
+        flutter pub outdated --no-dev-dependencies
+        flutter pub upgrade --dry-run
