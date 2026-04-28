@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart';
 import 'auth/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -40,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               width: _currentPage == index ? 24 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _currentPage == index ? AppColors.primary : AppColors.grey.withOpacity(0.3),
+                color: _currentPage == index ? Colors.teal : Colors.grey,
                 borderRadius: BorderRadius.circular(4),
               ),
             )),
@@ -59,7 +57,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                   }
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
                 child: Text(_currentPage == _pages.length - 1 ? 'ابدأ الآن' : 'التالي'),
               ),
             ),
@@ -85,13 +86,24 @@ class _OnboardingPage extends StatelessWidget {
           Container(
             width: 120,
             height: 120,
-            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(30)),
-            child: Icon(page['icon'], size: 60, color: AppColors.primary),
+            decoration: BoxDecoration(
+              color: Colors.teal.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Icon(page['icon'], size: 60, color: Colors.teal),
           ),
           const SizedBox(height: 40),
-          Text(page['title'], style: GoogleFonts.cairo(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+          Text(
+            page['title'],
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
-          Text(page['description'], style: GoogleFonts.cairo(fontSize: 16, color: AppColors.grey), textAlign: TextAlign.center),
+          Text(
+            page['description'],
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
