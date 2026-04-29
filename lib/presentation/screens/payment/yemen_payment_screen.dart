@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart';
 
 class YemenPaymentScreen extends StatefulWidget {
   const YemenPaymentScreen({super.key});
@@ -16,17 +16,20 @@ class _YemenPaymentScreenState extends State<YemenPaymentScreen> {
     {'id': 'jeeb', 'name': 'جيب', 'icon': Icons.account_balance_wallet},
     {'id': 'jawaly', 'name': 'جوالي', 'icon': Icons.phone_android},
     {'id': 'floosak', 'name': 'فلوسك', 'icon': Icons.money},
+    {'id': 'mtn_mobile', 'name': 'MTN Mobile Money', 'icon': Icons.sim_card},
+    {'id': 'y_mobile', 'name': 'Y Mobile Cash', 'icon': Icons.contact_phone},
   ];
   
   final List<Map<String, dynamic>> _banks = [
     {'id': 'kuraimi', 'name': 'بنك الكريمي', 'account': '1234-5678-9012'},
     {'id': 'yemen_bank', 'name': 'البنك اليمني', 'account': '2345-6789-0123'},
+    {'id': 'kuwait_bank', 'name': 'البنك اليمني الكويتي', 'account': '3456-7890-1234'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الدفع'), centerTitle: true),
+      appBar: AppBar(title: const Text('الدفع الإلكتروني'), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -38,6 +41,7 @@ class _YemenPaymentScreenState extends State<YemenPaymentScreen> {
               label: Text(w['name']),
               selected: _selectedMethod == w['id'],
               onSelected: (_) => setState(() => _selectedMethod = w['id']),
+              avatar: Icon(w['icon'], size: 16),
             )).toList(),
           ),
           const SizedBox(height: 16),
@@ -57,14 +61,9 @@ class _YemenPaymentScreenState extends State<YemenPaymentScreen> {
             decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
             child: Column(
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Text('المبلغ'), Text('$_amount ريال'),
-                ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('المبلغ'), Text('$_amount ريال')]),
                 const Divider(),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Text('الإجمالي', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('$_amount ريال', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
-                ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('الإجمالي', style: TextStyle(fontWeight: FontWeight.bold)), Text('$_amount ريال', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary))]),
               ],
             ),
           ),
