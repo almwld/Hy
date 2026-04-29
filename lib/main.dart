@@ -7,7 +7,6 @@ import 'core/themes/light_theme.dart';
 import 'core/themes/dark_theme.dart';
 import 'presentation/bloc/theme/theme_event.dart';
 import 'presentation/bloc/theme/theme_state.dart';
-import 'presentation/bloc/theme/theme_bloc.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
 import 'presentation/bloc/auth/auth_event.dart';
 import 'presentation/bloc/auth/auth_state.dart';
@@ -32,8 +31,8 @@ import 'presentation/screens/order/order_tracking_screen.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'presentation/screens/notifications/notifications_screen.dart';
 import 'presentation/screens/search/search_screen.dart';
+import 'domain/repositories/auth_repository.dart';
 import 'services/cache_service.dart';
-import 'services/connectivity_service.dart';
 import 'services/notification_service.dart';
 
 void main() async {
@@ -42,16 +41,11 @@ void main() async {
   // تهيئة الخدمات
   await CacheService().init();
   await NotificationService().init();
-  ConnectivityService().init();
   
-  // تثبيت اتجاه التطبيق
+  // تثبيت الاتجاه
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
   ]);
-  
-  // إخفاء شريط الحالة للتجربة الكاملة
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   
   runApp(const SehatakApp());
 }
@@ -61,66 +55,61 @@ class SehatakApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // إنشاء AuthRepository
+    final authRepository = AuthRepository();
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ThemeBloc>(
-          create: (context) => ThemeBloc()..add(LoadThemeEvent()),
-        ),
+        // Auth Bloc
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc()..add(CheckAuthStatusEvent()),
+          create: (context) => AuthBloc(authRepository: authRepository)..add(CheckAuthEvent()),
         ),
       ],
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, themeState) {
-          return MaterialApp(
-            title: AppStrings.appName,
-            debugShowCheckedModeBanner: false,
-            theme: LightTheme.getTheme(),
-            darkTheme: DarkTheme.getTheme(),
-            themeMode: themeState is ThemeLoadedState 
-                ? themeState.themeMode 
-                : ThemeMode.system,
-            
-            // الصفحة الرئيسية
-            home: const SplashScreen(),
-            
-            // إعدادات المسارات
-            routes: {
-              '/splash': (context) => const SplashScreen(),
-              '/onboarding': (context) => const OnboardingScreen(),
-              '/login': (context) => const LoginScreen(),
-              '/register': (context) => const RegisterScreen(),
-              '/forgot_password': (context) => const ForgotPasswordScreen(),
-              '/otp_verification': (context) => const OTPVerificationScreen(),
-              '/home': (context) => const MainNavigation(),
-              '/doctor_details': (context) => const DoctorDetailsScreen(),
-              '/consultations': (context) => const ConsultationsScreen(),
-              '/pharmacy': (context) => const PharmacyScreen(),
-              '/profile': (context) => const ProfileScreen(),
-              '/emergency': (context) => const EmergencyScreen(),
-              '/health_tips': (context) => const HealthTipsScreen(),
-              '/support': (context) => const SupportScreen(),
-              '/payment': (context) => const PaymentScreen(),
-              '/yemen_payment': (context) => const YemenPaymentScreen(),
-              '/booking': (context) => const BookingScreen(),
-              '/order_tracking': (context) => const OrderTrackingScreen(),
-              '/settings': (context) => const SettingsScreen(),
-              '/notifications': (context) => const NotificationsScreen(),
-              '/search': (context) => const SearchScreen(),
-            },
-            
-            // الإعدادات المحلية
-            locale: const Locale('ar'),
-            supportedLocales: const [
-              Locale('ar'),
-              Locale('en'),
-            ],
-            localizationsDelegates: const [
-              DefaultMaterialLocalization.delegate,
-              DefaultWidgetsLocalization.delegate,
-            ],
-          );
+      child: MaterialApp(
+        title: AppStrings.appName,
+        debugShowCheckedModeBanner: false,
+        theme: AppLightTheme.theme,
+        darkTheme: AppDarkTheme.theme,
+        themeMode: ThemeMode.light,
+        
+        // الصفحة الرئيسية - Splash
+        home: const SplashScreen(),
+        
+        // إعدادات المسارات
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+          '/onboarding': (context) => const OnboardingScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),
+          '/forgot_password': (context) => const ForgotPasswordScreen(),
+          '/otp_verification': (context) => const OTPVerificationScreen(),
+          '/home': (context) => const MainNavigation(),
+          '/doctor_details': (context) => const DoctorDetailsScreen(),
+          '/consultations': (context) => const ConsultationsScreen(),
+          '/pharmacy': (context) => const PharmacyScreen(),
+          '/profile': (context) => const ProfileScreen(),
+          '/emergency': (context) => const EmergencyScreen(),
+          '/health_tips': (context) => const HealthTipsScreen(),
+          '/support': (context) => const SupportScreen(),
+          '/payment': (context) => const PaymentScreen(),
+          '/yemen_payment': (context) => const YemenPaymentScreen(),
+          '/booking': (context) => const BookingScreen(),
+          '/order_tracking': (context) => const OrderTrackingScreen(),
+          '/settings': (context) => const SettingsScreen(),
+          '/notifications': (context) => const NotificationsScreen(),
+          '/search': (context) => const SearchScreen(),
         },
+        
+        // الإعدادات المحلية
+        locale: const Locale('ar'),
+        supportedLocales: const [
+          Locale('ar'),
+          Locale('en'),
+        ],
+        localizationsDelegates: const [
+          DefaultMaterialLocalization.delegate,
+          DefaultWidgetsLocalization.delegate,
+        ],
       ),
     );
   }
