@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../consultation/consultations_screen.dart';
 import '../pharmacy/pharmacy_screen.dart';
@@ -9,6 +8,7 @@ import '../emergency/emergency_screen.dart';
 import '../health_tips/health_tips_screen.dart';
 import '../support/support_screen.dart';
 import '../payment/yemen_payment_screen.dart';
+import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(leading: const Icon(Icons.healing), title: const Text('نصائح صحية'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const HealthTipsScreen())); }),
           ListTile(leading: const Icon(Icons.support_agent), title: const Text('الدعم الفني'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen())); }),
           ListTile(leading: const Icon(Icons.payment), title: const Text('الدفع'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const YemenPaymentScreen())); }),
+          ListTile(leading: const Icon(Icons.settings), title: const Text('الإعدادات'), onTap: () { Navigator.pop(context); Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
         ],
       ),
     );
@@ -95,7 +96,7 @@ class HomeContent extends StatelessWidget {
           floating: true,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text('مرحباً بك في صحتك', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold)),
+            title: const Text('مرحباً بك في صحتك'),
             background: Container(
               decoration: BoxDecoration(gradient: AppColors.primaryGradient),
               child: SafeArea(
@@ -106,9 +107,9 @@ class HomeContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Spacer(),
-                      Text('اهلاً بك 👋', style: GoogleFonts.cairo(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                      const Text('اهلاً بك 👋', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
                       const SizedBox(height: 8),
-                      Text('كيف يمكننا مساعدتك اليوم؟', style: GoogleFonts.cairo(fontSize: 14, color: Colors.white70)),
+                      const Text('كيف يمكننا مساعدتك اليوم؟', style: TextStyle(fontSize: 14, color: Colors.white70)),
                     ],
                   ),
                 ),
@@ -146,7 +147,7 @@ class HomeContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('أطباء مميزون', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text('أطباء مميزون', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 200,
@@ -155,14 +156,11 @@ class HomeContent extends StatelessWidget {
                     itemCount: 3,
                     itemBuilder: (context, index) {
                       final doctors = [
-                        {'name': 'د. أحمد محمد', 'specialty': 'أمراض القلب', 'rating': 4.8},
-                        {'name': 'د. سارة علي', 'specialty': 'أمراض جلدية', 'rating': 4.9},
-                        {'name': 'د. خالد محمود', 'specialty': 'أطفال', 'rating': 4.7},
+                        {'name': 'د. أحمد محمد', 'specialty': 'أمراض القلب', 'rating': 4.8, 'reviewsCount': 120, 'experience': '10 سنوات', 'clinicAddress': 'شارع الملك فهد، الرياض', 'consultationPrice': 150},
+                        {'name': 'د. سارة علي', 'specialty': 'أمراض جلدية', 'rating': 4.9, 'reviewsCount': 95, 'experience': '8 سنوات', 'clinicAddress': 'شارع الستين، الرياض', 'consultationPrice': 120},
+                        {'name': 'د. خالد محمود', 'specialty': 'أطفال', 'rating': 4.7, 'reviewsCount': 200, 'experience': '12 سنوات', 'clinicAddress': 'شارع التخصصي، الرياض', 'consultationPrice': 100},
                       ];
-                      return _DoctorCard(
-                        doctor: doctors[index],
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorDetailsScreen(doctor: {...doctors[index], 'reviewsCount': 120, 'experience': '10 سنوات', 'clinicAddress': 'شارع الملك فهد، الرياض', 'consultationPrice': 150}))),
-                      );
+                      return _DoctorCard(doctor: doctors[index]);
                     },
                   ),
                 ),
@@ -193,7 +191,7 @@ class _ServiceCard extends StatelessWidget {
             children: [
               Container(width: 60, height: 60, decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(16)), child: Icon(icon, size: 30, color: color)),
               const SizedBox(height: 12),
-              Text(title, textAlign: TextAlign.center, style: GoogleFonts.cairo(fontSize: 14, fontWeight: FontWeight.w500)),
+              Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -203,13 +201,13 @@ class _ServiceCard extends StatelessWidget {
 }
 
 class _DoctorCard extends StatelessWidget {
-  final Map<String, dynamic> doctor; final VoidCallback onTap;
-  const _DoctorCard({required this.doctor, required this.onTap});
+  final Map<String, dynamic> doctor;
+  const _DoctorCard({required this.doctor});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorDetailsScreen(doctor: doctor))),
       child: Container(
         width: 160,
         margin: const EdgeInsets.only(right: 16),
@@ -225,11 +223,11 @@ class _DoctorCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(doctor['name'], style: GoogleFonts.cairo(fontSize: 14, fontWeight: FontWeight.bold)),
+                    Text(doctor['name'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text(doctor['specialty'], style: GoogleFonts.cairo(fontSize: 12, color: AppColors.grey)),
+                    Text(doctor['specialty'], style: const TextStyle(fontSize: 12, color: AppColors.grey)),
                     const SizedBox(height: 8),
-                    Row(children: [const Icon(Icons.star, size: 14, color: Colors.amber), const SizedBox(width: 4), Text(doctor['rating'].toString(), style: GoogleFonts.cairo(fontSize: 12, fontWeight: FontWeight.bold))]),
+                    Row(children: [const Icon(Icons.star, size: 14, color: Colors.amber), const SizedBox(width: 4), Text(doctor['rating'].toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))]),
                   ],
                 ),
               ),

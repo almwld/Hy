@@ -12,4 +12,6 @@ class AppStrings {
   static const String support = 'الدعم الفني';
   static const String notifications = 'الإشعارات';
   static const String search = 'بحث';
+  static const String booking = 'حجز موعد';
+  static const String payment = 'الدفع';
 }
