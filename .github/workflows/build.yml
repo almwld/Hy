@@ -24,14 +24,93 @@ jobs:
           flutter-version: '3.16.0'
           channel: 'stable'
       
-      - name: Clean and build
+      - name: Create Flutter app with AndroidX
         run: |
-          flutter clean
-          flutter pub get
-          flutter build apk --release
+          rm -rf android ios .dart_tool build
+          
+          flutter create --project-name sehatak --org com.sehatak .
+          
+          cat > lib/main.dart << 'END'
+          import 'package:flutter/material.dart';
+          void main() => runApp(const MyApp());
+          class MyApp extends StatelessWidget {
+            const MyApp({super.key});
+            @override
+            Widget build(BuildContext context) {
+              return MaterialApp(
+                title: 'Sehatak',
+                theme: ThemeData(primarySwatch: Colors.teal),
+                home: const MyHomePage(),
+              );
+            }
+          }
+          class MyHomePage extends StatelessWidget {
+            const MyHomePage({super.key});
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: const Text('Sehatak Medical')),
+                body: const Center(child: Text('Welcome to Sehatak Medical Platform')),
+              );
+            }
+          }
+          END
+          
+          # إضافة namespace
+          sed -i '/android {/a\    namespace "com.sehatak.sehatak"' android/app/build.gradle
+          
+          # إضافة package
+          sed -i 's/<manifest /<manifest package="com.sehatak.sehatak" /' android/app/src/main/AndroidManifest.xml
+          
+          # تمكين AndroidX
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+          
+          # تعطيل shrinkResources لمنع الخطأ
+          sed -i 's/shrinkResources true/shrinkResources false/' android/app/build.gradle 2>/dev/null || true
+          sed -i 's/minifyEnabled true/minifyEnabled false/' android/app/build.gradle 2>/dev/null || true
+          
+          # إضافة إعدادات ضغط APK
+          cat >> android/app/build.gradle << 'GRADLE'
+          
+          android {
+              splits {
+                  abi {
+                      enable true
+                      reset()
+                      include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+                      universalApk false
+                  }
+              }
+          }
+          
+          // تحسين الحجم
+          project.ext {
+              enableShrinkResources = true
+              enableMinify = true
+          }
+          GRADLE
       
-      - name: Upload APK
+      - name: Build Split APKs
+        run: |
+          flutter build apk --release --split-per-abi --no-tree-shake-icons
+          
+          echo "=== أحجام APK ==="
+          ls -lh build/app/outputs/flutter-apk/*.apk
+      
+      - name: Upload Split APKs
         uses: actions/upload-artifact@v4
         with:
-          name: sehatak-apk
+          name: sehatak-split-apks
+          path: |
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-x86_64-release.apk
+          retention-days: 7
+      
+      - name: Upload Universal APK (fallback)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sehatak-universal-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
