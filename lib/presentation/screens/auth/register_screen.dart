@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -31,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
               const Text('إنشاء حساب جديد', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const Text('سجل بياناتك للمتابعة', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const Text('سجل بياناتك للمتابعة', style: TextStyle(fontSize: 16, color: AppColors.grey)),
               const SizedBox(height: 32),
               TextField(
                 controller: _nameController,
@@ -77,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           });
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _isLoading

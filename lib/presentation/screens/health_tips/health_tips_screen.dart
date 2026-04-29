@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart';
 
 class HealthTipsScreen extends StatelessWidget {
   const HealthTipsScreen({super.key});
@@ -40,12 +40,8 @@ class _TipCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: (tip['color'] as Color).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
+              width: 60, height: 60,
+              decoration: BoxDecoration(color: (tip['color'] as Color).withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
               child: Icon(tip['icon'], size: 30, color: tip['color']),
             ),
             const SizedBox(width: 16),

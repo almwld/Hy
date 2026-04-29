@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart';
 
 class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key});
@@ -14,11 +14,7 @@ class EmergencyScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.red.shade700, Colors.red.shade900],
-          ),
+          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.red.shade700, Colors.red.shade900]),
         ),
         child: SafeArea(
           child: Column(
@@ -26,10 +22,7 @@ class EmergencyScreen extends StatelessWidget {
               const SizedBox(height: 40),
               const Icon(Icons.emergency, size: 80, color: Colors.white),
               const SizedBox(height: 20),
-              const Text(
-                'خدمات الطوارئ',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
+              const Text('خدمات الطوارئ', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 40),
               Expanded(
                 child: ListView(
@@ -52,15 +45,8 @@ class EmergencyScreen extends StatelessWidget {
 }
 
 class _EmergencyButton extends StatelessWidget {
-  final String title;
-  final String number;
-  final IconData icon;
-  
-  const _EmergencyButton({
-    required this.title,
-    required this.number,
-    required this.icon,
-  });
+  final String title; final String number; final IconData icon;
+  const _EmergencyButton({required this.title, required this.number, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -69,29 +55,16 @@ class _EmergencyButton extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
-        onTap: () async {
-          final url = Uri.parse('tel:$number');
-          if (await canLaunchUrl(url)) await launchUrl(url);
-        },
+        onTap: () async { final url = Uri.parse('tel:$number'); if (await canLaunchUrl(url)) await launchUrl(url); },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, size: 30, color: Colors.red.shade700),
-              ),
+              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 30, color: Colors.red.shade700)),
               const SizedBox(width: 16),
-              Expanded(
-                child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-              ),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                child: Text(number, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red.shade700)),
-              ),
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white))),
+              Container(padding: const EdgeInsets.all(12), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle), child: Text(number, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red.shade700))),
             ],
           ),
         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
@@ -28,8 +28,7 @@ class SupportScreen extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () => launchUrl(Uri.parse('tel:$supportPhone')),
-                        icon: const Icon(Icons.phone),
-                        label: const Text('اتصل بنا'),
+                        icon: const Icon(Icons.phone), label: const Text('اتصل بنا'),
                         style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: Colors.white)),
                       ),
                     ),
@@ -37,8 +36,7 @@ class SupportScreen extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () => launchUrl(Uri.parse('mailto:$supportEmail')),
-                        icon: const Icon(Icons.email),
-                        label: const Text('راسلنا'),
+                        icon: const Icon(Icons.email), label: const Text('راسلنا'),
                         style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: Colors.white)),
                       ),
                     ),
@@ -50,6 +48,7 @@ class SupportScreen extends StatelessWidget {
           _FaqItem(question: 'كيف يمكنني حجز موعد؟', answer: 'يمكنك حجز موعد من خلال شاشة الاستشارات'),
           _FaqItem(question: 'كيف أتابع طلبي؟', answer: 'يمكنك تتبع طلبك من خلال شاشة طلباتي'),
           _FaqItem(question: 'ما هي طرق الدفع المتاحة؟', answer: 'نقبل الدفع عبر المحافظ الإلكترونية والتحويل البنكي'),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -57,8 +56,7 @@ class SupportScreen extends StatelessWidget {
 }
 
 class _FaqItem extends StatelessWidget {
-  final String question;
-  final String answer;
+  final String question; final String answer;
   const _FaqItem({required this.question, required this.answer});
 
   @override

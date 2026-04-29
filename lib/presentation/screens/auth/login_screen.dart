@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
 import 'register_screen.dart';
 import '../home/home_screen.dart';
 
@@ -25,13 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-              // Logo
               Center(
                 child: Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Colors.teal,
+                    gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Center(
@@ -43,30 +44,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Welcome
-              const Text('مرحباً بك 👋', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              Text(
+                'مرحباً بك 👋',
+                style: GoogleFonts.cairo(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.dark),
+              ),
               const SizedBox(height: 8),
-              const Text('سجل دخولك للمتابعة', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              Text(
+                'سجل دخولك للمتابعة',
+                style: GoogleFonts.cairo(fontSize: 16, color: AppColors.grey),
+              ),
               const SizedBox(height: 32),
-              // Email
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   labelText: 'البريد الإلكتروني',
                   hintText: 'example@email.com',
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
               ),
               const SizedBox(height: 16),
-              // Password
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'كلمة المرور',
                   hintText: '********',
-                  prefixIcon: const Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -78,7 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () {},
-                  child: const Text('نسيت كلمة المرور؟', style: TextStyle(color: Colors.teal)),
+                  child: Text(
+                    'نسيت كلمة المرور؟',
+                    style: GoogleFonts.cairo(color: AppColors.primary),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -99,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _isLoading
                       ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('تسجيل الدخول', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text('تسجيل الدخول', style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -116,10 +123,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.teal),
+                    side: const BorderSide(color: AppColors.primary),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('إنشاء حساب جديد', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.teal)),
+                  child: Text(
+                    'إنشاء حساب جديد',
+                    style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primary),
+                  ),
                 ),
               ),
             ],
