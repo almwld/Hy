@@ -44,7 +44,7 @@ android {
 
     defaultConfig {
         applicationId "com.sehatak.medical"
-        minSdkVersion 21
+        minSdkVersion 21  // تم التغيير من 19 إلى 21
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
